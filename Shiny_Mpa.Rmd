@@ -1,0 +1,90 @@
+---
+title: "Shiny_map"
+author: "Ana Palacio-Castro"
+date: "February 24, 2021"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Map with Shiny
+
+```{r}
+library(shiny)
+library(knitr)
+library(leaflet)
+```
+
+## Map information
+
+```{r}
+# Add info from the sampling stations (this is fake)
+stations <- read.csv(textConnection("
+            Site,Lat,Long,Pop, Data, Dates
+            Dry Tortugas, 24.628445, -82.870972, 645966,T1, 1985-2020
+            Flower Garden Bank, 27.862091, -93.970166, 645966,T1, 1999-2003
+            Florida reef track, 24.990346, -80.417367, 645966,T2, 1993-2020
+            Puerto Rico, 18.9, -65.685938, 645966,T1, 1998-2021
+            St. Tomas and St John, 18.347772, -64.917709, 645966,T3, 2000-2021
+            St. Croix, 17.720957, -64.841211, 645966,T2, 2001-2021"))
+
+kable(head(stations, format = "html"))
+
+Type1 <- dplyr::filter(stations, Data == "1")
+Type2 <- dplyr::filter(stations, Data == "2")
+Type3 <- dplyr::filter(stations, Data == "3")
+
+# Icon
+coral.icon<-makeIcon("https://img.icons8.com/ios-glyphs/30/000000/coral.png")
+
+#Change color depending on type of data?
+  #pal <- colorFactor(c("navy", "red"), domain = c("Type1", "Type2"))
+  stations$Data<-as.numeric(stations$Data)
+  pal <- colorNumeric(palette = "YlOrRd", domain = stations$Data)
+  
+  #stations$Data<-as.factor(stations$Data)
+  pal.gen <- colorFactor(palette = "Set1", domain = stations$Data)
+```
+
+
+```{r}
+r_colors <- rgb(t(col2rgb(colors()) / 255))
+names(r_colors) <- colors()
+
+ui <- fluidPage(
+  leafletOutput("mymap"),
+  p(),
+  actionButton("recalc", "New points")
+)
+
+# Icon
+coral.icon<-makeIcon("https://img.icons8.com/ios-glyphs/30/000000/coral.png")
+
+server <- function(input, output, session) {
+  output$mymap <- renderLeaflet({
+    leaflet() %>%
+    addProviderTiles(providers$CartoDB.Positron,
+    #addProviderTiles(providers$Stamen.Watercolor,
+        options = providerTileOptions(noWrap = TRUE)) %>%
+    addMarkers(icon=coral.icon, data = stations, popup = ~Site) %>% 
+    #addMarkers(data = stations, popup = stations$Site)  %>%
+    addCircleMarkers(data = Type1, group = "Type 1",
+                   lng = ~Long, lat = ~Lat, stroke = FALSE, radius = 6, 
+                   color = ~pal.gen(Data), fillOpacity = 0.7) %>%
+    addCircleMarkers(data = Type2, group = "Type 2",
+                   lng = ~Long, lat = ~Lat, stroke = FALSE, radius = 6, 
+                   color = ~pal.gen(Data), fillOpacity = 0.7) %>%
+    addCircleMarkers(data = Type3, group = "Type 3",
+                   lng = ~Long, lat = ~Lat, stroke = FALSE, radius = 6, 
+                   color = ~pal.gen(Data), fillOpacity = 0.7) %>%
+    addLayersControl(overlayGroups = c("Type 1", "Type 2", "Type 3"),
+                   options = layersControlOptions(collapsed = FALSE))
+  })
+}
+
+shinyApp(ui, server)
+```

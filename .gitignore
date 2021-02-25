@@ -1,0 +1,40 @@
+# R, rstudio and markdown
+# History files
+**/.Rhistory
+# Output files from R CMD check
+#/*.Rcheck/
+
+# RStudio files
+.Rproj.user
+**/.Rproj.user
+**/.Rproj
+**/.RData
+**/.Ruserdata
+.Rproj.user
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+#rsconnect
+**/rsconnect/
+
+# knitr and R markdown default cache directories
+**/*_cache/
+**/cache/
+# Temporary files created by R markdown
+**/.utf8.md
+**/.knit.md
+
+# Other files
+**/.directory
+**/.dropbox
+**/*.DS_Store*
+**/Old
+**/*.docx
+**/*.svg
+**/*.eds
+**/*.xls
+**/*.xlsx
+**/*.pdf
+**/*.xpim
