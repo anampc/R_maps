@@ -73,7 +73,7 @@ leaflet(stations) %>%
 
 ## Map 2
 
-Satalite based ... too dark?
+Satellite-based... too dark?
 
 ```{r}
 # Map2
@@ -152,6 +152,8 @@ leaflet(stations, height = '400px') %>%
 
 ## Map with Shiny
 
+It Will not run in rendered html. Look at the shiny script to run outside
+
 ```{r}
 
 r_colors <- rgb(t(col2rgb(colors()) / 255))
@@ -190,3 +192,5 @@ server <- function(input, output, session) {
 
 shinyApp(ui, server)
 ```
+
+
